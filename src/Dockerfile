@@ -21,63 +21,47 @@ ENV SHELL=/bin/bash
 # * Anything else you want to do like clean up goes here *
 # ********************************************************
 
-RUN <<EOT
-
-sudo apt update && apt-get upgrade
-
-# DEVELOPER TOOLS
-
-sudo apt install -y tree \
-  ack \
-  ag \
-  vim \
-  curl \
-  wget \
-  zip unzip \
-  tar \
-  nano \
-  git \
-  rsync \
-  make \
-  valgrind \
-  tcpdump \
-  ssh \
-  net-tools \
-  gzip \
-  jq \
-  yq \
-  iputils-ping
-
-# ROS2 SETUP
-
-source /opt/ros/humble/setup.bash
-
-sudo apt update && sudo apt install -y \
-  python3-flake8-docstrings \
-  python3-pip \
-  python3-pytest-cov \
-  ros-dev-tools
-
-sudo apt install -y \
-   python3-flake8-blind-except \
-   python3-flake8-builtins \
-   python3-flake8-class-newline \
-   python3-flake8-comprehensions \
-   python3-flake8-deprecated \
-   python3-flake8-import-order \
-   python3-flake8-quotes \
-   python3-pytest-repeat \
-   python3-pytest-rerunfailures
-
-sudo apt install ros-$ROS_DISTRO-rviz2 -y
-
-EOT
-
-COPY ./ros2_ws/ /opt/ros2_ws/
-COPY ./entrypoint.sh /opt/run/entrypoint.sh
+RUN \
+  sudo apt update && apt-get upgrade && \
+      sudo apt install -y tree \
+      ack \
+      vim \
+      curl \
+      wget \
+      zip unzip \
+      tar \
+      nano \
+      git \
+      rsync \
+      make \
+      valgrind \
+      tcpdump \
+      ssh \
+      net-tools \
+      gzip \
+      jq \
+      iputils-ping && \
+  # ROS2 SETUP
+  #source /opt/ros/humble/setup.bash  && \
+    sudo apt update && sudo apt install -y \
+    python3-flake8-docstrings \
+    python3-pip \
+    python3-pytest-cov \
+    ros-dev-tools && \
+  sudo apt install -y \
+    python3-flake8-blind-except \
+    python3-flake8-builtins \
+    python3-flake8-class-newline \
+    python3-flake8-comprehensions \
+    python3-flake8-deprecated \
+    python3-flake8-import-order \
+    python3-flake8-quotes \
+    python3-pytest-repeat \
+    python3-pytest-rerunfailures && \
+  sudo apt install ros-$ROS_DISTRO-rviz2 -y
 
 # [Optional] Set the default user. Omit if you want to keep the default as root.
 USER $USERNAME
 
-#CMD ["/bin/bash"]
-ENTRYPOINT ["/bin/bash", "/opt/run/entrypoint.sh"]
+CMD ["/bin/bash"]
+#ENTRYPOINT ["/bin/bash", "/opt/run/entrypoint.sh"]
