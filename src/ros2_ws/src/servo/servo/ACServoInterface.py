@@ -54,7 +54,7 @@ class ACServoInterface(Node):
         GPIO.output(self.dirPin, GPIO.HIGH if delay > 0 else GPIO.LOW)
 
         # Send step pulses (simple fixed-burst for now)
-        for _ in range(100):
+        for _ in range(5000):
             GPIO.output(self.stepPin, GPIO.HIGH)
             time.sleep(delay)
             GPIO.output(self.stepPin, GPIO.LOW)
