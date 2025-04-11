@@ -3,12 +3,16 @@ pipeline {
 
     stages {
         stage('System Information for Debugging') {
-            sh """
-              set -e
-              sudo apt install arp-scan net-tools
-              sudo arp-scan --interface=enp36s0 --localnet
-              ifconfig
-            """
+            steps {
+                script {
+                    sh """
+                      set -e
+                      sudo apt install arp-scan net-tools
+                      sudo arp-scan --interface=enp36s0 --localnet
+                      ifconfig
+                    """
+                }
+            }
         }
 
         stage('Apply updates to slaves') {
