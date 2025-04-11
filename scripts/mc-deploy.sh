@@ -14,5 +14,7 @@ for ip in "${ip_list[@]}"; do
     # ssh into mcs
     # verify docker is installed
     # pull newest docker container from registry
-    # run container
+    # verify git is installed
+    # pull newest git repo
+    # run container and mount in git repo
 done

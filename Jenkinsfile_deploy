@@ -2,22 +2,19 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
-            steps {
-                script {
-                    echo "Building the application..."
-                    // Example build step (replace with your actual command)
-                    sh 'echo Compiling source code'
-                }
-            }
+        stage('System Information for Debugging') {
+            sh """
+              set -e
+              sudo apt install arp-scan net-tools
+              sudo arp-scan --interface=enp36s0 --localnet
+              ifconfig
+            """
         }
 
-        stage('Test') {
+        stage('Apply updates to slaves') {
             steps {
                 script {
-                    echo "Running tests..."
-                    // Example test step (replace with your actual test command)
-                    sh 'echo Running tests'
+                    sh "./scripts/mc-deploy.sh"
                 }
             }
         }
