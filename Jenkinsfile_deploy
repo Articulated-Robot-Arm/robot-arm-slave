@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    echo "Building the application..."
+                    // Example build step (replace with your actual command)
+                    sh 'echo Compiling source code'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    echo "Running tests..."
+                    // Example test step (replace with your actual test command)
+                    sh 'echo Running tests'
+                }
+            }
+        }
+
+        stage('Teardown') {
+            steps {
+                script {
+                    echo "Cleaning up..."
+                    // Example teardown step
+                    sh 'echo Cleaning workspace'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                echo "Pipeline completed."
+            }
+        }
+    }
+}
