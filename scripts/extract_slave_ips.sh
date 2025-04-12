@@ -11,10 +11,4 @@ done < <(sudo arp-scan --interface=enp36s0 --localnet | awk '/^[0-9]/ && !/Route
 # Print the list to verify
 for ip in "${ip_list[@]}"; do
     echo "$ip"
-    # ssh into mcs
-    # verify docker is installed
-    # pull newest docker container from registry
-    # verify git is installed
-    # pull newest git repo
-    # run container and mount in git repo
 done

@@ -7,3 +7,51 @@
    - name: Print message
      ansible.builtin.debug:
        msg: Hello world
+
+- name: Prepare repo and run Docker container
+  hosts: myhosts
+  become: yes  # In case you need root for Docker
+  vars:
+    repo_dir: /opt/robot-arm-slave
+    repo_url: https://github.com/Articulated-Robot-Arm/robot-arm-slave
+    repo_branch: main
+
+  tasks:
+
+    - name: Ensure the repo directory exists
+      ansible.builtin.file:
+        path: "{{ repo_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Check if directory is already a git repository
+      ansible.builtin.stat:
+        path: "{{ repo_dir }}/.git"
+      register: git_repo_status
+
+    - name: Clone repo if it doesn't exist
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ repo_dir }}"
+        version: "{{ repo_branch }}"
+        update: yes
+      when: not git_repo_status.stat.exists
+
+    - name: Pull latest changes if repo already exists
+      ansible.builtin.shell: |
+        git fetch origin
+        git checkout {{ repo_branch }}
+        git pull
+      args:
+        chdir: "{{ repo_dir }}"
+      when: git_repo_status.stat.exists
+
+    - name: Check if Docker is installed
+      ansible.builtin.command: docker --version
+      register: docker_check
+      ignore_errors: yes
+
+    - name: Fail if Docker is not installed
+      ansible.builtin.fail:
+        msg: "Docker is not installed on the target host."
+      when: docker_check.rc != 0
