@@ -65,16 +65,21 @@
       ansible.builtin.shell: docker ps --filter "ancestor=carwyn987/robot-arm-slave:arm64v8-1.0.0" --format '{{'{{'}}.ID{{'}}'}}'
       register: running_container
       changed_when: false
-     
+
+    - name: Stop running container if exists
+      ansible.builtin.shell: docker stop {{ running_container.stdout }}
+      when: running_container.stdout != ""
+      ignore_errors: true
+
     - name: Run the robot arm container script (detached)
       ansible.builtin.shell: nohup ./src/run.sh > /tmp/robot-arm-run.log 2>&1 &
       args:
         chdir: /opt/robot-arm-slave
         executable: /bin/bash
-      when: container_check.stdout == ""
+      when: running_container.stdout == ""
 
     - name: Wait for container to appear
-      ansible.builtin.shell: docker ps --filter "ancestor=carwyn987/robot-arm-slave:arm64v8-1.0.0" --format '{{.ID}}'
+      ansible.builtin.shell: docker ps --filter "ancestor=carwyn987/robot-arm-slave:arm64v8-1.0.0" --format '{{'{{'}}.ID{{'}}'}}'
       register: container_running
       retries: 5
       delay: 2
