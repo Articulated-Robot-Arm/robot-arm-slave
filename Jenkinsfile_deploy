@@ -7,8 +7,8 @@ pipeline {
                 script {
                     sh """
                       set -e
-                      sudo apt install arp-scan net-tools
-                      sudo arp-scan --interface=enp36s0 --localnet
+                      apt install arp-scan net-tools
+                      arp-scan --interface=enp36s0 --localnet
                       ifconfig
                     """
                 }
