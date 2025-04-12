@@ -57,12 +57,12 @@ node {
                             sudo scripts/extract_slave_ips.sh >> tmp/inventory.ini
                             cat tmp/inventory.ini
                             ansible-inventory -i tmp/inventory.ini --list
-                            ansible myhosts -m ping -i tmp/inventory.ini \
+                            printf '%s\\n' "$SSH_PASS" | ansible myhosts -m ping -i tmp/inventory.ini \
                               --user=$SSH_USER \
-                              --ask-pass <<< "$SSH_PASS"
-                            ansible-inventory -i tmp/inventory.ini scripts/playbook.yaml \
+                              --ask-pass
+                            printf '%s\\n' "$SSH_PASS" | ansible-playbook -i tmp/inventory.ini scripts/playbook.yaml \
                               --user=$SSH_USER \
-                              --ask-pass <<< "$SSH_PASS"
+                              --ask-pass
                         """
                     }
                 }
