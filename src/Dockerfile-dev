@@ -3,6 +3,8 @@ FROM ubuntu:22.04
 # Avoid interactive prompts during install
 #ENV DEBIAN_FRONTEND=noninteractive
 
+RUN add-apt-repository ppa:ansible/ansible
+
 # Install essential tools
 RUN apt update && \
     apt install -y \
@@ -16,7 +18,8 @@ RUN apt update && \
         vim \
         less \
         gnupg2 \
-        software-properties-common && \
+        software-properties-common \
+        ansible && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
