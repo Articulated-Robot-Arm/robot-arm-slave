@@ -47,18 +47,19 @@ node {
                     ifconfig
                 '''
             }
-
-            stage('Apply updates to slaves') {
-                sh """
-                    echo 'Applying updates to slaves...'
-                    mkdir -p tmp
-                    echo '[myhosts]' > tmp/inventory.ini
-                    sudo scripts/extract_slave_ips.sh >> tmp/inventory.ini
-                    cat tmp/inventory.ini
-                    ansible-inventory -i tmp/inventory.ini --list
-                    ansible myhosts -m ping -i tmp/inventory.ini
-                    ansible-inventory -i tmp/inventory.ini scripts/playbook.yaml
-                """
+            withEnv(['ANSIBLE_HOST_KEY_CHECKING=False']) {
+                stage('Apply updates to slaves') {
+                    sh """
+                        echo 'Applying updates to slaves...'
+                        mkdir -p tmp
+                        echo '[myhosts]' > tmp/inventory.ini
+                        sudo scripts/extract_slave_ips.sh >> tmp/inventory.ini
+                        cat tmp/inventory.ini
+                        ansible-inventory -i tmp/inventory.ini --list
+                        ansible myhosts -m ping -i tmp/inventory.ini
+                        ansible-inventory -i tmp/inventory.ini scripts/playbook.yaml
+                    """
+                }
             }
 
             stage('Teardown') {
