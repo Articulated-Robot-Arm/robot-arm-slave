@@ -54,6 +54,7 @@ node {
                     mkdir -p tmp
                     echo '[myhosts]\n' > tmp/inventory.ini
                     sudo scripts/extract_slave_ips.sh >> tmp/inventory.ini
+                    cat tmp/inventory.ini
                     ansible-inventory -i inventory.ini --list
                     ansible myhosts -m ping -i inventory.ini
                     ansible-inventory -i inventory.ini scripts/playbook.yaml
