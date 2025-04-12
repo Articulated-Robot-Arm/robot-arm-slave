@@ -10,6 +10,7 @@
 
 - name: Prepare repo and run Docker container
   hosts: myhosts
+  become: yes  # In case you need root for Docker
   vars:
     repo_dir: /opt/robot-arm-slave
     repo_url: https://github.com/Articulated-Robot-Arm/robot-arm-slave
