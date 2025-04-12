@@ -25,7 +25,7 @@ node {
         } else {
             echo "Building image ${imageName}:${imageTag}..."
             def builtImage = docker.build(imageName, "-f src/Dockerfile-dev .")
-            imageId = builtImage.imageName
+            imageId = "${imageName}:${imageTag}"
         }
     }
 
