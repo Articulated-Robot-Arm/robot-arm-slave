@@ -11,24 +11,29 @@ node {
 
         if (imageExists) {
             echo "Image ${imageName}:${imageTag} already exists. Skipping build."
-            imageId = imageName + ":" + imageTag
+            imageId = "${imageName}:${imageTag}"
         } else {
             echo "Building image ${imageName}:${imageTag}..."
-            def builtImage = docker.build(imageName, 'src')
-            imageId = builtImage.id
+            def builtImage = docker.build(imageName, "-f src/Dockerfile-dev src")
+            imageId = builtImage.imageName
         }
     }
+
     docker.image(imageId).inside(
+        "--privileged " +
+        "--network=host " +
         "--volume=${env.WORKSPACE}:/workspace " +
-        "--volume=/var/run/docker.sock:/var/run/docker.sock"
+        "--volume=/var/run/docker.sock:/var/run/docker.sock " +
+        "--volume=/tmp/.X11-unix:/tmp/.X11-unix:cached " +
+        "--volume=/dev/dri:/dev/dri:cached"
     ) {
         try {
             stage('System Information for Debugging') {
                 echo "Gathering system information..."
                 sh '''
                     set -e
-                    sudo apt update && apt install -y arp-scan net-tools
-                    sudo arp-scan --interface=enp36s0 --localnet
+                    sudo apt update && sudo apt install -y arp-scan net-tools
+                    sudo arp-scan --interface=enp36s0 --localnet || echo "arp-scan may have failed"
                     ifconfig
                 '''
             }
