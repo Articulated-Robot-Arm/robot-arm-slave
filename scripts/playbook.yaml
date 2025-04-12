@@ -62,11 +62,11 @@
         mode: '0755'
 
     - name: Check if container is already running
-      ansible.builtin.shell: docker ps --filter "ancestor=carwyn987/robot-arm-slave:arm64v8-1.0.0" --format '{{.ID}}'
-      register: container_check
+      ansible.builtin.shell: docker ps --filter "ancestor=carwyn987/robot-arm-slave:arm64v8-1.0.0" --format '{{'{{'}}.ID{{'}}'}}'
+      register: running_container
       changed_when: false
-
-    - name: Run the robot arm container script (detached)
+     
+        - name: Run the robot arm container script (detached)
       ansible.builtin.shell: nohup ./src/run.sh > /tmp/robot-arm-run.log 2>&1 &
       args:
         chdir: /opt/robot-arm-slave
