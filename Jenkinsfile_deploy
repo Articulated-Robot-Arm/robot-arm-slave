@@ -47,7 +47,7 @@ node {
                     ifconfig
                 '''
             }
-            withCredentials([usernamePassword(credentialsId: 'ansible-ssh', usernameVariable: 'SSH_USER', passwordVariable: 'SSH_PASS')]) {
+            withCredentials([sshUserPrivateKey(credentialsId: 'ansible-ssh-key', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                 withEnv(['ANSIBLE_HOST_KEY_CHECKING=False']) {
                     stage('Apply updates to slaves') {
                         sh """
@@ -57,13 +57,13 @@ node {
                             sudo scripts/extract_slave_ips.sh >> tmp/inventory.ini
                             cat tmp/inventory.ini
                             ansible-inventory -i tmp/inventory.ini --list
-                            printf '%s\\n' "$SSH_PASS" | ansible myhosts -m ping -i tmp/inventory.ini \
+                            ansible myhosts -m ping -i tmp/inventory.ini \
                               --user=$SSH_USER \
-                              --ask-pass
-                            printf '%s\\n' "$SSH_PASS" | ansible-playbook -i tmp/inventory.ini scripts/playbook.yaml \
+                              --private-key=$SSH_KEY
+                            ansible-playbook -i tmp/inventory.ini scripts/playbook.yaml \
                               --user=$SSH_USER \
-                              --ask-pass
-                        """
+                              --private-key=$SSH_KEY
+                            """
                     }
                 }
             }
