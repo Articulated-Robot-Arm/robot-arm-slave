@@ -16,7 +16,7 @@ node {
             echo "Building image ${imageName}:${imageTag}..."
             sh "pwd"
             sh "ls -alh ./src/"
-            def builtImage = docker.build(imageName, "-f src/Dockerfile-dev src")
+            def builtImage = docker.build(imageName, "-f src/Dockerfile_dev .")
             imageId = builtImage.imageName
         }
     }
