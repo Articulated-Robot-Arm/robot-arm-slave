@@ -1,44 +1,49 @@
-pipeline {
-    agent any
+node {
+    def imageName = 'dev-image'
+    def imageTag = 'latest'
+    def imageId
 
-    stages {
-        stage('System Information for Debugging') {
-            steps {
-                script {
-                    sh """
-                      set -e
-                      apt install arp-scan net-tools
-                      arp-scan --interface=enp36s0 --localnet
-                      ifconfig
-                    """
-                }
-            }
-        }
+    stage('Check & Build Docker Image') {
+        def imageExists = sh(
+            script: "docker images -q ${imageName}:${imageTag}",
+            returnStdout: true
+        ).trim()
 
-        stage('Apply updates to slaves') {
-            steps {
-                script {
-                    sh "./scripts/mc-deploy.sh"
-                }
-            }
-        }
-
-        stage('Teardown') {
-            steps {
-                script {
-                    echo "Cleaning up..."
-                    // Example teardown step
-                    sh 'echo Cleaning workspace'
-                }
-            }
+        if (imageExists) {
+            echo "Image ${imageName}:${imageTag} already exists. Skipping build."
+            imageId = imageName + ":" + imageTag
+        } else {
+            echo "Building image ${imageName}:${imageTag}..."
+            def builtImage = docker.build(imageName, 'src')
+            imageId = builtImage.id
         }
     }
-
-    post {
-        always {
-            script {
-                echo "Pipeline completed."
+    docker.image(imageId).inside(
+        "--volume=${env.WORKSPACE}:/workspace " +
+        "--volume=/var/run/docker.sock:/var/run/docker.sock"
+    ) {
+        try {
+            stage('System Information for Debugging') {
+                echo "Gathering system information..."
+                sh '''
+                    set -e
+                    sudo apt update && apt install -y arp-scan net-tools
+                    sudo arp-scan --interface=enp36s0 --localnet
+                    ifconfig
+                '''
             }
+
+            stage('Apply updates to slaves') {
+                echo "Applying updates to slaves..."
+                sh './scripts/mc-deploy.sh'
+            }
+
+            stage('Teardown') {
+                echo "Cleaning up..."
+                sh 'echo Cleaning workspace'
+            }
+        } finally {
+            echo "Pipeline completed."
         }
     }
 }
