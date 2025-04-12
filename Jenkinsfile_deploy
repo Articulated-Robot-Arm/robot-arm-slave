@@ -3,7 +3,7 @@ node {
     stage('Ensure we have newest git repo changes') {
         sh """
             git fetch --all
-            git checkout master
+            git checkout main
         """
     }
 
