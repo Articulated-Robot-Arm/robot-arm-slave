@@ -49,7 +49,7 @@ node {
 
             stage('Apply updates to slaves') {
                 echo "Applying updates to slaves..."
-                sh './scripts/mc-deploy.sh'
+                sh 'sudo scripts/mc-deploy.sh'
             }
 
             stage('Teardown') {
