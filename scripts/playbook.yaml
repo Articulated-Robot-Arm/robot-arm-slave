@@ -55,3 +55,14 @@
       ansible.builtin.fail:
         msg: "Docker is not installed on the target host."
       when: docker_check.rc != 0
+
+    - name: Make sure the run.sh script is executable
+      ansible.builtin.file:
+        path: /opt/robot-arm-slave/src/run.sh
+        mode: '0755'
+
+    - name: Run the robot arm container using run.sh
+      ansible.builtin.shell: ./src/run.sh
+      args:
+        chdir: /opt/robot-arm-slave
+        executable: /bin/bash
