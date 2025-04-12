@@ -78,10 +78,19 @@
         executable: /bin/bash
       when: running_container.stdout == ""
 
+    - name: Print recent run log
+      ansible.builtin.shell: tail -n 20 /tmp/robot-arm-run.log
+      register: run_log
+      changed_when: false
+
+    - name: Show container script output
+      ansible.builtin.debug:
+        var: run_log.stdout
+
     - name: Wait for container to appear
       ansible.builtin.shell: docker ps --filter "ancestor=carwyn987/robot-arm-slave:arm64v8-1.0.0" --format '{{'{{'}}.ID{{'}}'}}'
       register: container_running
       retries: 5
-      delay: 2
+      delay: 5
       until: container_running.stdout != ""
       changed_when: false
