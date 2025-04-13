@@ -1,11 +1,10 @@
 - name: Prepare repo and run Docker container
   hosts: myhosts
-  become: yes  # Required for Docker operations
+  become: yes  # In case you need root for Docker
   vars:
     repo_dir: /opt/robot-arm-slave
     repo_url: https://github.com/Articulated-Robot-Arm/robot-arm-slave
     repo_branch: main
-    container_image: carwyn987/robot-arm-slave:arm64v8-1.0.0
 
   tasks:
 
@@ -49,11 +48,11 @@
 
     - name: Make sure the run.sh script is executable
       ansible.builtin.file:
-        path: "{{ repo_dir }}/src/run.sh"
+        path: /opt/robot-arm-slave/src/run.sh
         mode: '0755'
 
     - name: Check if container is already running
-      ansible.builtin.shell: docker ps --filter "ancestor={{ container_image }}" --format '{{'{{'}}.ID{{'}}'}}'
+      ansible.builtin.shell: docker ps --filter "ancestor=carwyn987/robot-arm-slave:arm64v8-1.0.0" --format '{{'{{'}}.ID{{'}}'}}'
       register: running_container
       changed_when: false
 
@@ -65,7 +64,7 @@
     - name: Run the robot arm container script (detached)
       ansible.builtin.shell: nohup ./src/run.sh > /tmp/robot-arm-run.log 2>&1 &
       args:
-        chdir: "{{ repo_dir }}"
+        chdir: /opt/robot-arm-slave
         executable: /bin/bash
       when: running_container.stdout == ""
 
@@ -79,7 +78,7 @@
         var: run_log.stdout
 
     - name: Wait for container to appear
-      ansible.builtin.shell: docker ps --filter "ancestor={{ container_image }}" --format '{{'{{'}}.ID{{'}}'}}'
+      ansible.builtin.shell: docker ps --filter "ancestor=carwyn987/robot-arm-slave:1.0.0" --format '{{'{{'}}.ID{{'}}'}}'
       register: container_running
       retries: 5
       delay: 5
