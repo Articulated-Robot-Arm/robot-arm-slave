@@ -88,7 +88,7 @@
         var: run_log.stdout
 
     - name: Wait for container to appear
-      ansible.builtin.shell: docker ps --filter "ancestor=carwyn987/robot-arm-slave:arm64v8-1.0.0" --format '{{'{{'}}.ID{{'}}'}}'
+      ansible.builtin.shell: docker ps --filter "ancestor=carwyn987/robot-arm-slave:1.0.0" --format '{{'{{'}}.ID{{'}}'}}'
       register: container_running
       retries: 5
       delay: 5
