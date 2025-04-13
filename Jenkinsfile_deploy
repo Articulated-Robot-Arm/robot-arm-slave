@@ -1,3 +1,13 @@
+properties([
+    parameters([
+        choice(
+            name: 'PLAYBOOK_NAME',
+            choices: ['playbook-deploy.yaml', 'playbook-stop.yaml'],
+            description: 'Select which Ansible playbook to run'
+        )
+    ])
+])
+
 node {
 
     stage('Ensure we have newest git repo changes') {
@@ -60,7 +70,7 @@ node {
                             ansible myhosts -m ping -i tmp/inventory.ini \
                               --user=$SSH_USER \
                               --private-key=$SSH_KEY
-                            ansible-playbook -i tmp/inventory.ini scripts/playbook.yaml \
+                            ansible-playbook -i tmp/inventory.ini scripts/${params.PLAYBOOK_NAME} \
                               --user=$SSH_USER \
                               --private-key=$SSH_KEY
                             """

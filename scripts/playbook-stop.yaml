@@ -1,0 +1,38 @@
+- name: Stop and remove all Docker containers on hosts
+  hosts: myhosts
+  become: yes
+
+  tasks:
+    - name: Check if Docker is installed
+      ansible.builtin.command: docker --version
+      register: docker_check
+      ignore_errors: yes
+
+    - name: Fail if Docker is not installed
+      ansible.builtin.fail:
+        msg: "Docker is not installed on the target host."
+      when: docker_check.rc != 0
+
+    - name: List running containers
+      ansible.builtin.shell: docker ps -q
+      register: running_containers
+      changed_when: false
+
+    - name: Stop all running containers
+      ansible.builtin.shell: docker stop $(docker ps -q)
+      when: running_containers.stdout != ""
+      ignore_errors: yes
+
+    - name: Remove all stopped containers
+      ansible.builtin.shell: docker rm $(docker ps -a -q)
+      when: running_containers.stdout != ""
+      ignore_errors: yes
+
+    - name: List containers after cleanup
+      ansible.builtin.shell: docker ps -a
+      register: container_list_after
+      changed_when: false
+
+    - name: Show remaining containers
+      ansible.builtin.debug:
+        var: container_list_after.stdout
