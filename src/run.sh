@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo docker run -d \
+sudo docker run --rm -d \
   -e ROS_LOCALHOST_ONLY=0 \
   -e ROS_DOMAIN_ID=42 \
   --net=host \
