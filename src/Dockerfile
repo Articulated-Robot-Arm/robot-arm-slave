@@ -42,4 +42,4 @@ RUN apt-get install -y \
 ENV SHELL=/bin/bash
 
 # Entrypoint script (you must mount or copy this file)
-ENTRYPOINT ["/bin/bash", "/opt/run/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/robot-arm-slave/src/entrypoint.sh"]
