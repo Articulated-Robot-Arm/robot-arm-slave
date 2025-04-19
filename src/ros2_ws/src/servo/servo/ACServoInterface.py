@@ -6,34 +6,37 @@ import time
 import threading
 import RPi.GPIO as GPIO
 
+from Encoder import Encoder
+
 class ACServoInterface(Node):
 
     def __init__(self):
         super().__init__('ac_servo_interface')
         self.get_logger().info("Initializing AC Servo Interface Node...")
 
-        # Motor config
+        # Config
         self.minLimitDelay = 120e-6
         self.maxLimitDelay = 4000e-6
-        self.stepPin = 3
-        self.dirPin = 4
+        self.stepPin = 3 # GPIO 3 = Pin 5
+        self.dirPin = 4 # GPIO 4 = Pin 7
+        self.run_duration_sec = 2.0
 
-        # Setup GPIO
+        self.encoderPinA = 17 # GPIO 17 = Pin 11
+        self.encoderPinB = 27 # GPIO 27 = Pin 13
+
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.stepPin, GPIO.OUT)
         GPIO.setup(self.dirPin, GPIO.OUT)
 
-        # ROS
+        self.encoder = Encoder(self.encoderPinA, self.encoderPinB)
+        self.create_timer(1.0, self._log_encoder_status)
+
         self.velocity_cmd_subscriber = self.create_subscription(
             Float32,
             'setVelocity',
             self.setPWMDelay,
             10
         )
-
-        # Thread-safe version control
-        self.lock = threading.Lock()
-        self.command_version = 0
 
     def setPWMDelay(self, msg: Float32):
         delay = msg.data
@@ -43,27 +46,26 @@ class ACServoInterface(Node):
         direction = GPIO.HIGH if msg.data > 0 else GPIO.LOW
         GPIO.output(self.dirPin, direction)
 
-        with self.lock:
-            self.command_version += 1
-            my_version = self.command_version
-
-        thread = threading.Thread(target=self._run_motor_continuous, args=(delay, my_version))
+        thread = threading.Thread(target=self._run_motor_fixed_time, args=(delay,))
         thread.daemon = True
         thread.start()
 
-    def _run_motor_continuous(self, delay, version):
-        self.get_logger().info(f"Starting motor loop (delay={delay:.6f}s)")
+    def _run_motor_fixed_time(self, delay):
+        self.get_logger().info(f"Running motor for {self.run_duration_sec}s with delay {delay:.6f}s")
 
-        while True:
-            with self.lock:
-                if version != self.command_version:
-                    self.get_logger().info(f"Stopping motor thread (version {version})")
-                    return
-
+        end_time = time.time() + self.run_duration_sec
+        while time.time() < end_time:
             GPIO.output(self.stepPin, GPIO.HIGH)
             time.sleep(delay)
             GPIO.output(self.stepPin, GPIO.LOW)
             time.sleep(delay)
+
+        self.get_logger().info("Motor run complete.")
+
+    def _log_encoder_status(self):
+        ticks = self.encoder.get_ticks()
+        angle = self.encoder.get_angle()
+        self.get_logger().info(f"Encoder Ticks: {ticks} | Angle: {angle:.2f}°")
 
     def destroy_node(self):
         self.get_logger().info("Cleaning up GPIO...")
