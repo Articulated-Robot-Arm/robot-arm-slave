@@ -61,6 +61,7 @@ class ACServoInterface(Node):
             time.sleep(delay)
             GPIO.output(self.stepPin, GPIO.LOW)
             time.sleep(delay)
+            self.get_logger().info(f'Angle: {self.encoder.get_angle()}')
 
         self.get_logger().info("Motor run complete.")
 
