@@ -8,5 +8,7 @@ env -i /bin/bash  -c '
   export RCUTILS_LOGGING_DIRECTORY=$PWD/log/;
   source /opt/ros/humble/setup.bash;
   source install/setup.bash;
+  export ROS_LOCALHOST_ONLY=0;
+  export ROS_DOMAIN_ID=42;
   ros2 run servo servo;
 '
