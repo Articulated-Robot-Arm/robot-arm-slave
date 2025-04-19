@@ -14,6 +14,8 @@ class ACServoInterface(Node):
         super().__init__('ac_servo_interface')
         self.get_logger().info("Initializing AC Servo Interface Node...")
 
+        GPIO.cleanup()
+
         # Config
         self.minLimitDelay = 120e-6
         self.maxLimitDelay = 4000e-6
@@ -29,7 +31,6 @@ class ACServoInterface(Node):
         GPIO.setup(self.dirPin, GPIO.OUT)
 
         self.encoder = Encoder(self.encoderPinA, self.encoderPinB)
-        self.create_timer(1.0, self._log_encoder_status)
 
         self.velocity_cmd_subscriber = self.create_subscription(
             Float32,
