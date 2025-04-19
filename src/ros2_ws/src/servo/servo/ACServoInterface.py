@@ -6,7 +6,7 @@ import time
 import threading
 import RPi.GPIO as GPIO
 
-from Encoder import Encoder
+from .Encoder import Encoder
 
 class ACServoInterface(Node):
 
