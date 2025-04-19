@@ -56,12 +56,15 @@ class ACServoInterface(Node):
         self.get_logger().info(f"Running motor for {self.run_duration_sec}s with delay {delay:.6f}s")
 
         end_time = time.time() + self.run_duration_sec
+        last_print = time.time()
         while time.time() < end_time:
             GPIO.output(self.stepPin, GPIO.HIGH)
             time.sleep(delay)
             GPIO.output(self.stepPin, GPIO.LOW)
             time.sleep(delay)
-            self.get_logger().info(f'Angle: {self.encoder.get_angle()}')
+            if time.time() - last_print > 0.5:
+              self.get_logger().info(f'Angle: {self.encoder.get_angle()}')
+              last_print = time.time()
 
         self.get_logger().info("Motor run complete.")
 
