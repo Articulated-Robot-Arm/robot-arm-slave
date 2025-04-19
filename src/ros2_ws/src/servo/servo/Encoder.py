@@ -3,7 +3,7 @@ import threading
 import time
 
 class Encoder:
-    def __init__(self, pin_a, pin_b, ticks_per_rev=400, degrees_per_rev=360.0, poll_delay=0.001):
+    def __init__(self, pin_a, pin_b, logger, ticks_per_rev=400, degrees_per_rev=360.0, poll_delay=0.001):
         self.pin_a = pin_a
         self.pin_b = pin_b
         self.ticks_per_rev = ticks_per_rev
@@ -22,10 +22,12 @@ class Encoder:
         self.lock = threading.Lock()
 
         # Start polling thread
+        logger.info("Starting polling thread")
         self._running = True
         self.poll_thread = threading.Thread(target=self._poll_encoder)
         self.poll_thread.daemon = True
         self.poll_thread.start()
+        logger.info("Polling thread started")
 
     def _poll_encoder(self):
         while self._running:

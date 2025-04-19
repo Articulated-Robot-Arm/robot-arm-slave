@@ -30,7 +30,7 @@ class ACServoInterface(Node):
         GPIO.setup(self.stepPin, GPIO.OUT)
         GPIO.setup(self.dirPin, GPIO.OUT)
 
-        self.encoder = Encoder(self.encoderPinA, self.encoderPinB)
+        self.encoder = Encoder(self.encoderPinA, self.encoderPinB, self.get_logger())
 
         self.velocity_cmd_subscriber = self.create_subscription(
             Float32,
@@ -38,6 +38,7 @@ class ACServoInterface(Node):
             self.setPWMDelay,
             10
         )
+        self.get_logger().info("setVelocity subscription setup")
 
     def setPWMDelay(self, msg: Float32):
         delay = msg.data
