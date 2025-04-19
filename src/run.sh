@@ -5,6 +5,7 @@ sudo docker run --rm -d \
   -e ROS_DOMAIN_ID=42 \
   --net=host \
   -v /opt/robot-arm-slave/:/robot-arm-slave \
+  -v /opt/robot-arm-slave/src/ros2_ws:/opt/ros2_ws \
   --device /dev/gpiomem \
   --device /dev/mem \
   --privileged \
