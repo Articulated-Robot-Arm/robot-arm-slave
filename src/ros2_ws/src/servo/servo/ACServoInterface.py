@@ -38,7 +38,31 @@ class ACServoInterface(Node):
             self.setPWMDelay,
             10
         )
+
+        self.position_cmd_subscriber = self.create_subscription(
+            Float32,
+            'setPositionDegrees',
+            self.setPositionDegrees,
+            10
+        )
+
         self.get_logger().info("setVelocity subscription setup")
+
+    def setPositionDegrees(self, msg: Float32):
+        goalAngle = msg.data
+        assert 0 <=  goalAngle, "Goal angle cannot be less than 0 degrees."
+        assert 360 >= goalAngle, "Goal angle cannot be greater than 360 degrees."
+        curAngle = self.encoder.get_angle()
+
+        delay = 240e-4
+
+        while curAngle - goalAngle > 1:
+            for _ in range(5):
+                GPIO.output(self.stepPin, GPIO.HIGH)
+                time.sleep(delay)
+                GPIO.output(self.stepPin, GPIO.LOW)
+                time.sleep(delay)
+
 
     def setPWMDelay(self, msg: Float32):
         delay = msg.data
