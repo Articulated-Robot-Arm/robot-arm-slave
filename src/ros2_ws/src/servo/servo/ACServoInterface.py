@@ -61,9 +61,9 @@ class ACServoInterface(Node):
 
         def getDelay(prop):
             if prop > 10:
-                return 200e-5
-            else:
                 return 200e-6
+            else:
+                return 200e-5
 
         while curAngle - goalAngle > 5 or curAngle - goalAngle < -5:
             curAngle = self.encoder.get_angle()

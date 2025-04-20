@@ -38,6 +38,8 @@ RUN apt-get install -y \
     python3-pytest-rerunfailures \
     ros-${ROS_DISTRO}-rviz2
 
+RUN python -m pip install RPi.GPIO
+
 # Default shell
 ENV SHELL=/bin/bash
 
