@@ -54,14 +54,18 @@ class ACServoInterface(Node):
         assert 360 >= goalAngle, "Goal angle cannot be greater than 360 degrees."
         curAngle = self.encoder.get_angle()
 
-        delay = 240e-4
-
+        delay = 240e-5
+        last_print = time.time()
         while curAngle - goalAngle > 1:
             for _ in range(5):
                 GPIO.output(self.stepPin, GPIO.HIGH)
                 time.sleep(delay)
                 GPIO.output(self.stepPin, GPIO.LOW)
                 time.sleep(delay)
+                if time.time() - last_print > 0.5:
+                    self.get_logger().info(f'Angle: {self.encoder.get_angle()}')
+                    last_print = time.time()
+
 
 
     def setPWMDelay(self, msg: Float32):
