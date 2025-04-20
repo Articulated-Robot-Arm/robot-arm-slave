@@ -56,8 +56,8 @@ class ACServoInterface(Node):
         curAngle = self.encoder.get_angle()
         self.get_logger().info(f"CurAngle: {curAngle}, GoalAngle: {goalAngle}")
 
-        minDelay = 240e-6
-        maxDelay = 240e-5
+        minDelay = 180e-6
+        maxDelay = 240e-4
 
         def getDelay(proportional):
             c = maxDelay - (proportional / 360.0) * (maxDelay - minDelay)
