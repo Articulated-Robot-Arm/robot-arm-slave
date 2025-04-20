@@ -49,6 +49,7 @@ class ACServoInterface(Node):
         self.get_logger().info("setVelocity subscription setup")
 
     def setPositionDegrees(self, msg: Float32):
+        self.get_logger().info("Received setPositionDegrees request")
         goalAngle = msg.data
         assert 0 <=  goalAngle, "Goal angle cannot be less than 0 degrees."
         assert 360 >= goalAngle, "Goal angle cannot be greater than 360 degrees."
@@ -57,6 +58,7 @@ class ACServoInterface(Node):
         delay = 240e-5
         last_print = time.time()
         while curAngle - goalAngle > 1:
+            curAngle = self.encoder.get_angle()
             for _ in range(5):
                 GPIO.output(self.stepPin, GPIO.HIGH)
                 time.sleep(delay)
