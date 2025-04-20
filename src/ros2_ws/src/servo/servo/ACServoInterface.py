@@ -58,8 +58,9 @@ class ACServoInterface(Node):
 
         delay = 240e-5
         last_print = time.time()
-        while curAngle - goalAngle > 1:
+        while curAngle - goalAngle > 1 or curAngle - goalAngle < 1:
             curAngle = self.encoder.get_angle()
+            self.get_logger().info(f"CurAngle: {curAngle}, GoalAngle: {goalAngle}")
             for _ in range(5):
                 GPIO.output(self.stepPin, GPIO.HIGH)
                 time.sleep(delay)
@@ -68,7 +69,8 @@ class ACServoInterface(Node):
                 if time.time() - last_print > 0.5:
                     self.get_logger().info(f'Angle: {self.encoder.get_angle()}')
                     last_print = time.time()
-
+        
+        self.get_logger().info(f"CurAngle: {curAngle}, GoalAngle: {goalAngle}")
 
 
     def setPWMDelay(self, msg: Float32):
