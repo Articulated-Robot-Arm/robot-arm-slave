@@ -75,16 +75,12 @@ class ACServoInterface(Node):
         last_print = time.time()
         while curAngle - goalAngle > 5 or curAngle - goalAngle < -5:
             curAngle = self.encoder.get_angle()
-            self.get_logger().info(f"CurAngle: {curAngle}, GoalAngle: {goalAngle}")
-            for _ in range(5):
-                delay = getDelay(abs(curAngle - goalAngle))
-                GPIO.output(self.stepPin, GPIO.HIGH)
-                time.sleep(delay)
-                GPIO.output(self.stepPin, GPIO.LOW)
-                time.sleep(delay)
-                if time.time() - last_print > 0.5:
-                    self.get_logger().info(f'Angle: {self.encoder.get_angle()}, delay = {delay}')
-                    last_print = time.time()
+            #self.get_logger().info(f"CurAngle: {curAngle}, GoalAngle: {goalAngle}")
+            delay = getDelay(abs(curAngle - goalAngle))
+            GPIO.output(self.stepPin, GPIO.HIGH)
+            time.sleep(delay)
+            GPIO.output(self.stepPin, GPIO.LOW)
+            time.sleep(delay)
         
         self.get_logger().info(f"FINAL: CurAngle: {curAngle}, GoalAngle: {goalAngle}")
 
