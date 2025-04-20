@@ -49,11 +49,12 @@ class ACServoInterface(Node):
         self.get_logger().info("setVelocity subscription setup")
 
     def setPositionDegrees(self, msg: Float32):
-        self.get_logger().info("Received setPositionDegrees request")
         goalAngle = msg.data
+        self.get_logger().info(f"Received setPositionDegrees request for {goalAngle}")
         assert 0 <=  goalAngle, "Goal angle cannot be less than 0 degrees."
         assert 360 >= goalAngle, "Goal angle cannot be greater than 360 degrees."
         curAngle = self.encoder.get_angle()
+        self.get_logger().info(f"CurAngle: {curAngle}, GoalAngle: {goalAngle}")
 
         delay = 240e-5
         last_print = time.time()
