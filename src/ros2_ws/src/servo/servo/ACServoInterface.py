@@ -63,10 +63,9 @@ class ACServoInterface(Node):
         maxDelay = 240e-4
 
         def getDelay(proportional):
-            if proportional > 10:
+            if proportional > 20:
                 return self.minLimitDelay
-            c = maxDelay - (proportional / 10.0) * (maxDelay - minDelay)
-            self.get_logger().info(f"delay = {c}")
+            c = maxDelay - (proportional / 20.0) * (maxDelay - minDelay)
             if c < self.minLimitDelay:
                 return self.minLimitDelay
             elif c > self.maxLimitDelay:
@@ -77,15 +76,14 @@ class ACServoInterface(Node):
         while curAngle - goalAngle > 5 or curAngle - goalAngle < -5:
             curAngle = self.encoder.get_angle()
             self.get_logger().info(f"CurAngle: {curAngle}, GoalAngle: {goalAngle}")
-            for _ in range(5):
-                delay = getDelay(abs(curAngle - goalAngle))
-                GPIO.output(self.stepPin, GPIO.HIGH)
-                time.sleep(delay)
-                GPIO.output(self.stepPin, GPIO.LOW)
-                time.sleep(delay)
-                if time.time() - last_print > 0.5:
-                    self.get_logger().info(f'Angle: {self.encoder.get_angle()}, delay = {delay}')
-                    last_print = time.time()
+            delay = getDelay(abs(curAngle - goalAngle))
+            GPIO.output(self.stepPin, GPIO.HIGH)
+            time.sleep(delay)
+            GPIO.output(self.stepPin, GPIO.LOW)
+            time.sleep(delay)
+            if time.time() - last_print > 0.5:
+                self.get_logger().info(f'Angle: {self.encoder.get_angle()}, delay = {delay}')
+                last_print = time.time()
         
         self.get_logger().info(f"FINAL: CurAngle: {curAngle}, GoalAngle: {goalAngle}")
 
