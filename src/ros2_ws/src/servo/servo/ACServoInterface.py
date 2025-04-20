@@ -61,6 +61,7 @@ class ACServoInterface(Node):
 
         def getDelay(proportional):
             c = maxDelay - (proportional / 360.0) * (maxDelay - minDelay)
+            self.get_logger().info(f"delay = {c}")
             if c < self.minLimitDelay:
                 return self.minLimitDelay
             elif c > self.maxLimitDelay:
