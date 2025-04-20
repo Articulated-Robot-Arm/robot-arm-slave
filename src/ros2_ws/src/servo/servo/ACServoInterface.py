@@ -58,7 +58,7 @@ class ACServoInterface(Node):
 
         delay = 240e-5
         last_print = time.time()
-        while curAngle - goalAngle > 1 or curAngle - goalAngle < 1:
+        while curAngle - goalAngle > 1 or curAngle - goalAngle < -1:
             curAngle = self.encoder.get_angle()
             self.get_logger().info(f"CurAngle: {curAngle}, GoalAngle: {goalAngle}")
             for _ in range(5):
