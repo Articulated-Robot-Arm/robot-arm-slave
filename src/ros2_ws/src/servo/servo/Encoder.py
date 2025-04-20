@@ -1,14 +1,17 @@
 import RPi.GPIO as GPIO
 import threading
 import time
+import os
 
 class Encoder:
-    def __init__(self, pin_a, pin_b, logger, ticks_per_rev=600, degrees_per_rev=360.0, poll_delay=0.001):
+    def __init__(self, pin_a, pin_b, logger, ticks_per_rev=600, degrees_per_rev=360.0, poll_delay=0.0001):
         self.pin_a = pin_a
         self.pin_b = pin_b
         self.ticks_per_rev = ticks_per_rev
         self.degrees_per_rev = degrees_per_rev
         self.poll_delay = poll_delay  # Polling interval in seconds (1 ms default)
+
+        os.nice(-10)
 
         # Setup GPIO
         GPIO.setup(pin_a, GPIO.IN)
