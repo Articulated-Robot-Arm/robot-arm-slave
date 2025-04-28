@@ -10,5 +10,5 @@ env -i /bin/bash  -c '
   source install/setup.bash;
   export ROS_LOCALHOST_ONLY=0;
   export ROS_DOMAIN_ID=42;
-  sudo ros2 run servo servo;
+  sudo -E ros2 run servo servo;
 '
